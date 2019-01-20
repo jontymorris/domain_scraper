@@ -96,7 +96,7 @@ def main(args):
                 continue
             
             # lookup in search engine
-            result = searcher.search(domain, add_delay=True)
+            result = searcher.google_search(domain)
 
             # start the worker
             worker = Worker(domain, result.urls, result.page_source)
@@ -106,7 +106,7 @@ def main(args):
     
     else:
         # lookup in search engine
-        result = searcher.search(args["domain"])
+        result = searcher.google_search(args["domain"])
 
         # start the worker
         worker = Worker(args["domain"], result.urls, result.page_source)
@@ -170,10 +170,11 @@ if __name__ == "__main__":
         print "Must provide the domain to search!"
         show_args()
 
-    # adjust limit if necessary
+    # adjust limit
     if "limit" not in args:
-        args["limit"] = 20
-    elif args["limit"] > 50:
-        args["limit"] = 50
+        args["limit"] = 40
+    elif args["limit"] > 60:
+        args["limit"] = 60
+        print "Lowing the search limit to 60"
     
     main(args)

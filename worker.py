@@ -79,7 +79,7 @@ class Worker:
                         except:
                             pass
         except Exception, ex:
-            print "Exception: {}".format(ex)
+            pass
     
     def find_emails(self, source):
         """ Finds all of the emails relating to the domain """

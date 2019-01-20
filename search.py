@@ -30,32 +30,12 @@ class Searcher:
         options = Options()
         options.set_headless(headless=False)
 
-        self.browser = webdriver.Firefox(firefox_options=options, executable_path="usr/local/bin/geckodriver")
+        self.browser = webdriver.Firefox(firefox_options=options, executable_path="./geckodriver")
         self.browser.set_page_load_timeout = 5
-
-        self.engine_index = 0
-        self.search_engines = [
-            self.duck_search,
-            self.google_search
-        ]
     
-    def search(self, text, add_delay=False):
-        """ Perform a search with an unspecified engine """
-
-        # perform the search
-        result = self.search_engines[self.engine_index](text, add_delay)
-
-        # increment to the next search engine
-        self.engine_index += 1
-        if self.engine_index >= len(self.search_engines):
-            self.engine_index = 0
-        
-        return result
-    
-    def google_search(self, text, add_delay):
+    def google_search(self, text, add_delay=True):
         """ Searches Google for the text """
-
-        #query = "https://www." + choice(self.google_servers) + "/search?tbs=li:1&num=" + str(self.limit) + "&q=" + "+".join(text.split(" "))
+        
         query = "https://www.{}/search?tbs=li:1&num={}&q={}".format(choice(self.google_servers), str(self.limit), "+".join(text.split(" ")))
         
         # query google
@@ -91,37 +71,6 @@ class Searcher:
         if add_delay:
             sleep(randint(20, 80))
 
-        return SearchResult(links, page_source)
-
-    def duck_search(self, text, add_delay):
-        """ Searches DuckDuckGo for the text """
-
-        query = "https://duckduckgo.com/html?q={}".format("+".join(text.split(" ")))
-
-        # query duckduckgo
-        try:
-            self.browser.get(query)
-        except:
-            print "Failed to serach for " + text
-
-        # get all of the links
-        links = []
-        count = 0
-        for element in self.browser.find_elements_by_class_name("result__a"):
-            if count >= self.limit:
-                break
-
-            try:
-                links.append(element.get_attribute("href"))
-                count += 1
-            except:
-                print "Something went wrong with DuckDuckGo"
-
-        # record the page source
-        page_source = ""
-        if self.browser.page_source:
-            page_source = self.browser.page_source
-        
         return SearchResult(links, page_source)
 
     def close(self):
